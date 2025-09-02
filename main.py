@@ -4,6 +4,7 @@ import os
 import json
 import time
 import logging
+from dotenv import load_dotenv
 
 # --- configurar logging ---
 logging.basicConfig(
@@ -14,6 +15,8 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+load_dotenv()
 
 API_URL = "http://partner.net-empregos.com/hrsmart_insert.asp"
 REMOVE_API_URL = "http://partner.net-empregos.com/hrsmart_remove.asp"

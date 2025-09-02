@@ -18,7 +18,10 @@ logging.basicConfig(
 API_URL = "http://partner.net-empregos.com/hrsmart_insert.asp"
 REMOVE_API_URL = "http://partner.net-empregos.com/hrsmart_remove.asp"
 FEED_URL = "https://recruit.zoho.eu/recruit/downloadjobfeed?clientid=da279e513762f8ff929094f0761b8d7028c9ede87d9cc749c7fc7c9ec526d541db96e9a00da67f84101be0a8e52f82b6"
-API_KEY = "6F89DD1C1E8D4CD2"
+API_KEY = os.getenv("API_ACCESS_KEY")
+if not API_KEY:
+    print("Error: API_ACCESS_KEY is not set in the environment or .env file.")
+    exit(1)
 
 # --- carregar mappings ---
 try:

@@ -4,6 +4,7 @@ import os
 import json
 import time
 import logging
+import re
 from dotenv import load_dotenv
 
 # --- configurar logging ---
@@ -50,10 +51,13 @@ except Exception as e:
 
 # normalizeção de texto
 # garantir que tudo fica em ISO-8859-1 antes do envio
-def to_iso_8859_1(text):
-    return text.encode("utf-8", errors="ignore").decode("iso-8859-1", errors="ignore")
-
-import re
+def to_iso_8859_1(text: str) -> str:
+    if not text:
+        return ""
+    # First normalize Unicode characters to NFC
+    text = normalize_text(text)
+    # Encode to ISO-8859-1, replacing chars that can't be represented
+    return text.encode("iso-8859-1", errors="replace").decode("iso-8859-1")
 
 def normalize_text(text: str) -> str:
     # substitui apóstrofos e aspas tipográficas por simples

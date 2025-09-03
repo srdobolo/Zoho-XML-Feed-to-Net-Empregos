@@ -50,13 +50,15 @@ except Exception as e:
     raise
 
 # garantir que tudo fica em ISO-8859-1 antes do envio
-def to_iso_8859_1(text: str) -> str:
+def fix_mojibake(text: str) -> str:
     if not text:
         return ""
-    # First normalize Unicode characters to NFC
-    text = normalize_text(text)
-    # Encode to ISO-8859-1, replacing chars that can't be represented
-    return text.encode("iso-8859-1", errors="replace").decode("iso-8859-1")
+    try:
+        # Encode as ISO-8859-1 bytes, then decode as UTF-8
+        return text.encode("iso-8859-1").decode("utf-8")
+    except UnicodeDecodeError:
+        # fallback if decoding fails
+        return text
 
 # normalização de texto
 def normalize_text(text: str) -> str:
@@ -119,7 +121,7 @@ for job in root.findall("job"):
         payload = {
             "ACCESS": API_KEY,
             "REF": ref,
-            "TITULO": to_iso_8859_1(title),
+            "TITULO": fix_mojibake(title),
             "TEXTO": (normalize_text(
                 f"{description}"
                 f"<a href='{url}'>Clique aqui para se candidatar!</a><br>"

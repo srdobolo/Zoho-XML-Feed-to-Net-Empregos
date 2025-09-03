@@ -49,7 +49,6 @@ except Exception as e:
     logging.error(f"Erro ao carregar XML feed → {e}")
     raise
 
-# normalizeção de texto
 # garantir que tudo fica em ISO-8859-1 antes do envio
 def to_iso_8859_1(text: str) -> str:
     if not text:
@@ -59,6 +58,7 @@ def to_iso_8859_1(text: str) -> str:
     # Encode to ISO-8859-1, replacing chars that can't be represented
     return text.encode("iso-8859-1", errors="replace").decode("iso-8859-1")
 
+# normalização de texto
 def normalize_text(text: str) -> str:
     # substitui apóstrofos e aspas tipográficas por simples
     replacements = {

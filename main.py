@@ -125,7 +125,8 @@ for job in root.findall("job"):
             "TEXTO": (normalize_text(
                 f"{description}"
                 f"<a href='{url}'>Clique aqui para se candidatar!</a><br>"
-                f"ou por email para info@recruityard.com")
+                # f"ou por email para info@recruityard.com"
+                )
             ),
             "ZONA": zona,
             "CATEGORIA": categoria,

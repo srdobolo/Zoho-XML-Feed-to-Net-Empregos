@@ -41,7 +41,7 @@ tipo_mapping = mappings["tipo_mapping"]
 
 # --- fetch feed ---
 try:
-    response = requests.get(FEED_URL, timeout=10)
+    response = requests.get(FEED_URL, timeout=30)
     response.raise_for_status()
     root = ET.fromstring(response.content)
     logging.info("Feed carregado com sucesso.")

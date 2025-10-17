@@ -132,16 +132,15 @@ for job in root.findall("job"):
             tipo = "4"   # Teletrabalho
             zona = "0"   # Todas as Zonas
 
+        texto = normalize_text(
+            f"{description}"
+            f"<a href='{url}'>Clique aqui para se candidatar!</a><br>"
+        )
         payload = {
             "ACCESS": API_KEY,
             "REF": ref,
             "TITULO": fix_mojibake(title),
-            "TEXTO": (normalize_text(
-                f"{description}"
-                f"<a href='{url}'>Clique aqui para se candidatar!</a><br>"
-                # f"ou por email para info@recruityard.com"
-                )
-            ),
+            "TEXTO": fix_mojibake(texto),
             "ZONA": zona,
             "CATEGORIA": categoria,
             "TIPO": tipo,
@@ -153,7 +152,8 @@ for job in root.findall("job"):
         logging.info(f"[{ref}] Anúncio antigo removido.")
 
         # --- inserir novo ---
-        r = requests.post(API_URL, data=payload, timeout=10)
+        encoded_payload = urlencode(payload, encoding="iso-8859-1").encode("iso-8859-1")
+        r = requests.post(API_URL, data=encoded_payload, headers=FORM_HEADERS, timeout=10)
         if r.status_code == 200:
             logging.info(f"[{ref}] '{title}' publicado com sucesso.")
         else:

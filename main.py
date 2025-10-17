@@ -5,6 +5,7 @@ import json
 import time
 import logging
 import re
+from urllib.parse import urlencode
 from dotenv import load_dotenv
 
 # --- configurar logging ---
@@ -23,6 +24,7 @@ API_URL = "http://partner.net-empregos.com/hrsmart_insert.asp"
 REMOVE_API_URL = "http://partner.net-empregos.com/hrsmart_remove.asp"
 FEED_URL = "https://recruit.zoho.eu/recruit/downloadjobfeed?clientid=da279e513762f8ff929094f0761b8d7028c9ede87d9cc749c7fc7c9ec526d541db96e9a00da67f84101be0a8e52f82b6"
 API_KEY = os.getenv("API_ACCESS_KEY")
+FORM_HEADERS = {"Content-Type": "application/x-www-form-urlencoded; charset=iso-8859-1"}
 if not API_KEY:
     print("Error: API_ACCESS_KEY is not set in the environment or .env file.")
     exit(1)
@@ -50,15 +52,27 @@ except Exception as e:
     raise
 
 # garantir que tudo fica em ISO-8859-1 antes do envio
+def _looks_like_mojibake(candidate: str) -> bool:
+    """Detect common mojibake sequences that show up when UTF-8 is misread as Latin-1."""
+    if not candidate:
+        return False
+    markers = ("\u00c3", "\u00a1", "\u00a3", "\u00a7", "\u00aa", "\u00ba", "\u00bd", "\u00be")
+    return any(marker in candidate for marker in markers)
+
+
 def fix_mojibake(text: str) -> str:
+    """Attempt to repair UTF-8 strings that were decoded as ISO-8859-1."""
     if not text:
         return ""
     try:
-        # Encode as ISO-8859-1 bytes, then decode as UTF-8
-        return text.encode("iso-8859-1").decode("utf-8")
+        repaired = text.encode("iso-8859-1").decode("utf-8")
     except UnicodeDecodeError:
-        # fallback if decoding fails
         return text
+    if _looks_like_mojibake(repaired):
+        return text
+    if _looks_like_mojibake(text):
+        return repaired
+    return repaired
 
 # normalização de texto
 def normalize_text(text: str) -> str:
